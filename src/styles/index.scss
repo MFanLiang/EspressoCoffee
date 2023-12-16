@@ -1,0 +1,8 @@
+/** 全局样式主控 - 样式表 */
+
+@import './reset.scss';
+
+// 自定义 NProgress 进度条颜色
+#nprogress .bar {
+  background: rgb(248, 136, 17) !important; //自定义颜色
+}

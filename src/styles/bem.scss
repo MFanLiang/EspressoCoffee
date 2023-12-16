@@ -1,0 +1,40 @@
+/** @ bem架构 */
+
+$namespcae: 'xm' !default;
+
+$block-sel: '-' !default;
+
+$ele-sel: '__' !default;
+
+$mod-sel: '--' !default;
+
+// 定义混入（块元素样式规则）
+@mixin block($block) {
+  $Block: #{$namespcae + $block-sel + $block};
+
+  .#{$Block} {
+    @content; // 占位符
+  }
+}
+
+// 定义混入（element 元素样式规则）
+@mixin ele($el) {
+  $selector: &;
+
+  @at-root {
+    #{$selector + $ele-sel + $el} {
+      @content; // 占位符
+    }
+  }
+}
+
+// 定义混入（modify 元素样式规则）
+@mixin mod($m) {
+  $selector: &;
+
+  @at-root {
+    #{$selector + $mod-sel + $m} {
+      @content; // 占位符
+    }
+  }
+}
