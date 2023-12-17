@@ -39,7 +39,7 @@ const useUserStore = defineStore("user", {
             return resolve(response.data);
           } else {
             this.loginBtnLoading = false;
-            return reject(response.msg);
+            return reject(response.message);
           }
         })
       });
