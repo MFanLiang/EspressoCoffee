@@ -13,10 +13,10 @@ import { ElMessage } from 'element-plus';
 import type { PropsType } from '@/components/BaseDialog/type';
 import {
   getAllUserInformation,
-  reqUserInfo,
+  fuzzyquery,
   delPointerUser,
 } from '@/apis/user/index';
-import { userInfo } from '@/apis/user/type';
+import type { userInfo } from '@/apis/user/type';
 import type { paginationType } from './type.ts';
 
 const params = ref<Partial<PropsType>>({});
@@ -25,7 +25,8 @@ const params = ref<Partial<PropsType>>({});
 const userInfoPopoerVisible = ref<boolean>(false);
 
 /** 表格数据源 */
-const tableData = ref<userInfo[] | []>([]);
+const tableData = ref<userInfo[] | []>();
+const loading = ref<boolean>(true);
 
 /** 用户新增/编辑 对话框实例 */
 const uesrInfoPoper = ref();
@@ -46,9 +47,10 @@ const searchFormData = ref<{ userName: string }>({
 });
 
 const searchSingleUser = async () => {
-  const rs = await reqUserInfo(searchFormData.value.userName);
+  // 调用模糊搜索接口
+  const rs = await fuzzyquery({ search: searchFormData.value.userName });
   if (rs.code === 200) {
-    tableData.value = rs.data;
+    tableData.value = rs.data as any;
   }
 };
 
@@ -61,6 +63,17 @@ const handleClose = (dark: boolean) => {
   userInfoPopoerVisible.value = dark;
 };
 
+const svg = `
+        <path class="path" d="
+          M 30 15
+          L 28 17
+          M 25.61 25.61
+          A 15 15, 0, 0, 1, 15 30
+          A 15 15, 0, 1, 1, 27.99 7.5
+          L 15 15
+        " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
+      `;
+
 /** 添加新用户 */
 const addNewUser = () => {
   if (uesrInfoPoper.value) {
@@ -69,33 +82,33 @@ const addNewUser = () => {
   userInfoPopoerVisible.value = true;
   params.value = {
     title: '新增用户',
-    width: '45%',
+    width: '60%',
     successBtnText: '确认',
     closeBtnText: '取消',
     isDraggable: true,
     fullscreen: false,
-    useType: 'add'
+    useType: 'add',
   };
 };
 
 /** 编辑指定用户项 */
-const handleEditUser = (index, row) => {
+const handleEditUser = (_index: number, row: userInfo) => {
   if (uesrInfoPoper.value) {
     uesrInfoPoper.value?.echoFormData('edit', row);
   }
   userInfoPopoerVisible.value = true;
   params.value = {
     title: '编辑用户',
-    width: '45%',
+    width: '60%',
     successBtnText: '确认',
     closeBtnText: '取消',
     isDraggable: true,
     fullscreen: false,
-    useType: 'edit'
+    useType: 'edit',
   };
 };
 
-const handleDeleteUser = async (index, row) => {
+const handleDeleteUser = async (_index: number, row: userInfo) => {
   const res = await delPointerUser(row.id);
   if (res.code === 200) {
     initDataSource();
@@ -117,6 +130,7 @@ const handleSizeChange = () => {};
 const handleCurrentChange = () => {};
 
 const initDataSource = async () => {
+  loading.value = true;
   try {
     const res = await getAllUserInformation();
     tableData.value = res.data;
@@ -125,9 +139,15 @@ const initDataSource = async () => {
       pageSize: res.pageSize,
       total: res.total,
     };
+    loading.value = false;
   } catch (err) {
     if (err) {
       console.log('err :>> ', err);
+      ElMessage({
+        message: `网络异常，请稍后再试`,
+        type: 'error',
+      });
+      loading.value = false;
     }
   }
 };
@@ -193,6 +213,11 @@ onMounted(() => {
       <div>
         <el-table
           :data="tableData"
+          v-loading="loading"
+          element-loading-text="Loading..."
+          :element-loading-spinner="svg"
+          element-loading-svg-view-box="-10, -10, 50, 50"
+          element-loading-background="rgba(122, 122, 122, 0.5)"
           stripe
           :height="540"
           @selection-change="handleSelectionChange"

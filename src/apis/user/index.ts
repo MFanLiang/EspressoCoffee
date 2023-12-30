@@ -37,6 +37,15 @@ const reqUserInfo = (params: string) => {
   });
 };
 
+/** 模糊搜索指定用户 */
+const fuzzyquery = (data: any) => {
+  return service<any, allUserInfoType>({
+    url: '/user/fuzzyquery',
+    method: 'POST',
+    data,
+  })
+};
+
 /** 获取所有用户信息 */
 const getAllUserInformation = () => {
   return service<any, allUserInfoType>({
@@ -71,7 +80,7 @@ const editPointerUser = (data: userInfo) => {
     url: '/user',
     data,
   });
-}
+};
 
 export {
   addNewUser,
@@ -79,5 +88,6 @@ export {
   reqUserInfo,
   getAllUserInformation,
   editPointerUser,
-  delPointerUser
+  delPointerUser,
+  fuzzyquery
 };
