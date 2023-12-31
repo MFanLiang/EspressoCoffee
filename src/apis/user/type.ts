@@ -20,6 +20,8 @@ export interface userInfo {
   tel: string;
   /** 密码 */
   password?: string;
+  /** 用户状态 (1 可用状态，0 注销不可用状态) */
+  status: number;
   /** 创建时间 */
   createDate: string;
   /** 更新时间 */

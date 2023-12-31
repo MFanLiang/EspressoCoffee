@@ -213,35 +213,6 @@ defineExpose({
           </el-col>
           <el-col :span="12">
             <el-form-item
-              prop="password"
-              label="密码"
-            >
-              <el-input
-                v-model="formData.password"
-                placeholder="Please input password"
-                autocomplete="off"
-                show-password
-                clearable
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item
-              prop="userFullName"
-              label="用户全名"
-            >
-              <el-input
-                v-model="formData.userFullName"
-                placeholder="Please input userFullName"
-                autocomplete="off"
-                clearable
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item
               prop="userRole"
               label="用户角色"
             >
@@ -261,8 +232,36 @@ defineExpose({
               </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="24">
+          <el-col
+            :span="12"
+            v-if="props.params.useType === 'add'"
+          >
+            <el-form-item
+              prop="password"
+              label="密码"
+            >
+              <el-input
+                v-model="formData.password"
+                placeholder="Please input password"
+                autocomplete="off"
+                show-password
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              prop="userFullName"
+              label="用户全名"
+            >
+              <el-input
+                v-model="formData.userFullName"
+                placeholder="Please input userFullName"
+                autocomplete="off"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item
               prop="tel"

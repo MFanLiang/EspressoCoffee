@@ -15,6 +15,7 @@ import {
   getAllUserInformation,
   fuzzyquery,
   delPointerUser,
+  editPointerUser,
 } from '@/apis/user/index';
 import type { userInfo } from '@/apis/user/type';
 import type { paginationType } from './type.ts';
@@ -74,6 +75,53 @@ const svg = `
         " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
       `;
 
+/** 用户权限tag颜色 */
+const userRoleTypeTag = (val: number) => {
+  switch (val) {
+    case 1:
+      return '';
+    case 2:
+      return 'success';
+    case 3:
+      return 'success';
+    case 4:
+      return 'danger';
+    case 5:
+      return 'warning';
+    default:
+      return '';
+  }
+};
+
+/** 用户角色下拉枚举值 */
+const options: any = {
+  1: {
+    value: 1,
+    label: '超级管理员',
+    disabled: false,
+  },
+  2: {
+    value: 2,
+    label: '普通用户',
+    disabled: false,
+  },
+  3: {
+    value: 3,
+    label: '运营用户',
+    disabled: false,
+  },
+  4: {
+    value: 4,
+    label: '访客用户',
+    disabled: false,
+  },
+  5: {
+    value: 5,
+    label: '临时用户',
+    disabled: false,
+  },
+};
+
 /** 添加新用户 */
 const addNewUser = () => {
   if (uesrInfoPoper.value) {
@@ -117,6 +165,25 @@ const handleDeleteUser = async (_index: number, row: userInfo) => {
       type: 'success',
     });
   }
+};
+
+const switchStatus = async (_val: boolean, row: userInfo) => {
+  await editPointerUser(row)
+    .then((res) => {
+      if (res.code === 200) {
+        ElMessage({
+          message: `用户【 ${row.userName} 】已${_val ? '启用' : '禁用'}`,
+          type: 'success',
+        });
+      }
+    })
+    .catch((err: Error) => {
+      console.log('err :>> ', err);
+      ElMessage({
+        message: `${err || '网络异常，请稍后再试'}`,
+        type: 'error',
+      });
+    });
 };
 
 const handleSelectionChange = (val: userInfo[]) => {
@@ -251,7 +318,38 @@ onMounted(() => {
             label="用户角色"
             align="center"
             width="200"
-          />
+          >
+            <template #default="scope">
+              <el-tag
+                effect="dark"
+                :type="userRoleTypeTag(scope.row.userRole)"
+                disable-transitions
+              >
+                {{ options[scope.row.userRole]?.label }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="status"
+            label="用户状态"
+            align="center"
+            width="180"
+          >
+            <template #default="scope">
+              <el-switch
+                v-model="scope.row.status"
+                :disabled="scope.row.userRole === 1"
+                active-text="启用"
+                inactive-text="禁用"
+                inline-prompt
+                style="
+                  --el-switch-on-color: #13ce66;
+                  --el-switch-off-color: #ff4949;
+                "
+                @change="(status: boolean) => switchStatus(status, scope.row)"
+              />
+            </template>
+          </el-table-column>
           <el-table-column
             prop="avatar"
             label="用户头像"
