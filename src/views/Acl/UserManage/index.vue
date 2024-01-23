@@ -259,7 +259,7 @@ onMounted(() => {
 
     <el-card
       style="margin-top: 10px"
-      :body-style="{ padding: '12px' }"
+      :body-style="{ padding: '12px', height: 'calc(100vh - 225px)' }"
     >
       <div class="btn_action">
         <el-button
@@ -277,7 +277,16 @@ onMounted(() => {
           BatchDel
         </el-button>
       </div>
-      <div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: end;
+          flex-direction: column;
+          height: 93%;
+          gap: 15px;
+        "
+      >
         <el-table
           :data="tableData"
           v-loading="loading"
@@ -286,7 +295,6 @@ onMounted(() => {
           element-loading-svg-view-box="-10, -10, 50, 50"
           element-loading-background="rgba(122, 122, 122, 0.5)"
           stripe
-          :height="540"
           @selection-change="handleSelectionChange"
         >
           <el-table-column
@@ -454,7 +462,6 @@ onMounted(() => {
         />
       </div>
     </el-card>
-
     <UserInfoPoper
       ref="uesrInfoPoper"
       :userInfoPopoerVisible="userInfoPopoerVisible"

@@ -29,6 +29,11 @@ const initData = async () => {
     const res = await getInvoiceList();
     if (res.code === 200) {
       tableData.value = res.data;
+      paginationConfig.value = {
+        currentPage: res.currentPage,
+        pageSize: res.pageSize,
+        total: res.total,
+      };
     }
   } catch (err) {
     if (err) {
@@ -44,7 +49,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <el-card :body-style="{ padding: '12px' }">
+    <el-card :body-style="{ padding: '12px', height: 'calc(100vh - 146px)' }">
       <div class="btn_action">
         <el-button
           type="primary"
@@ -61,11 +66,19 @@ onMounted(() => {
           BatchDel
         </el-button>
       </div>
-      <div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: end;
+          flex-direction: column;
+          height: 93%;
+          gap: 15px;
+        "
+      >
         <el-table
           :data="tableData"
           stripe
-          :height="540"
           @selection-change="handleSelectionChange"
         >
           <el-table-column
