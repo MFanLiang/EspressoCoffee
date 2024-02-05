@@ -74,6 +74,7 @@ const LayOutSettingStore = useLayOutSettingStore();
     user-select: none;
     color: #fff;
     font-size: $base_menu_logo_title_fontsize;
+    white-space: nowrap;
   }
 }
 

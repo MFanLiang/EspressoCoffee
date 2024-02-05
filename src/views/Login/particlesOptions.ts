@@ -1,3 +1,4 @@
+/** 粒子配置源数据 */
 const options = {
   background: {
     color: '#202020',
