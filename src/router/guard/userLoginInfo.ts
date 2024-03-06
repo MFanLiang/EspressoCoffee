@@ -51,7 +51,7 @@ export default function setupUserLoginInfoGuard(router: Router) {
 
   });
 
-  router.afterEach(async (to, from, next) => {
+  router.afterEach(async () => {
     NProgress.done();
   });
 };

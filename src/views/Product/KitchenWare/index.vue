@@ -148,27 +148,27 @@ onMounted(() => {
             fixed="right"
           >
             <template #default="scope">
+              <!-- @click="handleClick" -->
               <el-button
                 link
                 type="primary"
                 size="small"
-                @click="handleClick"
               >
                 查看
               </el-button>
+               <!-- @click="handleEditUser(scope.$index, scope.row)" -->
               <el-button
                 link
                 type="primary"
                 size="small"
-                @click="handleEditUser(scope.$index, scope.row)"
               >
                 编辑
               </el-button>
+              <!--  @click="handleDeleteUser(scope.$index, scope.row)" -->
               <el-button
                 link
                 type="danger"
                 size="small"
-                @click="handleDeleteUser(scope.$index, scope.row)"
                 :disabled="scope.row.userRole === 1"
               >
                 删除
@@ -176,6 +176,9 @@ onMounted(() => {
             </template>
           </el-table-column>
         </el-table>
+
+        <!--  @size-change="handleSizeChange" -->
+        <!-- @current-change="handleCurrentChange" -->
         <el-pagination
           v-model:current-page="paginationConfig.currentPage"
           v-model:page-size="paginationConfig.pageSize"
@@ -183,8 +186,6 @@ onMounted(() => {
           :disabled="false"
           layout="total, sizes, prev, pager, next, jumper"
           :total="paginationConfig.total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
         />
       </div>
     </el-card>

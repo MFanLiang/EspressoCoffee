@@ -24,6 +24,7 @@ const FormData = reactive({
 });
 
 /** 表单控制实例 */
+// @ts-ignore
 const ruleFormRef = ref<FormInstance>();
 
 /** 用户名校验 */
@@ -45,12 +46,14 @@ const validatePassWord = (_rule: any, value: any, callback: any) => {
 };
 
 /** 表单规则校验 */
+// @ts-ignore
 const rules = reactive<FormRules<typeof FormData>>({
   name: [{ validator: validateUserName, trigger: 'blur' }],
   password: [{ validator: validatePassWord, trigger: 'blur' }],
 });
 
 /** 登录发起函数 */
+// @ts-ignore
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(async (valid: any) => {
@@ -81,6 +84,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
 };
 
 /** 登录表单的重置 */
+// @ts-ignore
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.resetFields();
@@ -160,7 +164,7 @@ const particlesLoaded = async (container: any) => {
           <el-form-item prop="username">
             <el-input
               v-model="FormData.userName"
-              placeholder="Please input username"
+              placeholder="Please input username(default:root)"
               autocomplete="on"
             >
               <template #prefix>
@@ -172,7 +176,7 @@ const particlesLoaded = async (container: any) => {
             <el-input
               v-model="FormData.password"
               type="password"
-              placeholder="Please input password"
+              placeholder="Please input password(default:123456)"
               show-password
               autocomplete="on"
             >
@@ -234,7 +238,7 @@ const particlesLoaded = async (container: any) => {
   position: absolute;
   z-index: 1;
   width: 100%;
-  max-width: 758px;
+  max-width: 890px;
   height: 420px;
   background-color: rgba(255, 255, 255, 0.13);
   transform: translate(-50%, -50%);

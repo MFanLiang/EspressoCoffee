@@ -21,7 +21,7 @@ interface settingConfigType {
 
 const settingsConfig: settingConfigType = {
   title: '咖啡技术平台',
-  logoImg: '/public/logo.jpg',
+  logoImg: './logo.jpg',
   logoHidden: true,
   labelTitle: '咖啡',
   footerCopyright: '©️ 咖啡专属技术平台',
