@@ -147,7 +147,7 @@ const particlesLoaded = async (container: any) => {
             placeholder="Password"
             class="input"
           />
-          <button class="btn">Register</button>
+          <button :disabled="true" class="btn">Register</button>
         </form>
       </div>
 
