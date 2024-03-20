@@ -1,21 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue';
 import useCurrentInstance from '@/hooks/userCurrentInstance';
 import { loadSlim } from 'tsparticles-slim';
+import { onMounted, reactive, ref, watch } from 'vue';
 // @ts-ignore
-import type { FormInstance, FormRules } from 'element-plus';
-import { ElNotification } from 'element-plus';
-import { User, Lock, Eleme } from '@element-plus/icons-vue';
-import { useRouter } from 'vue-router';
-import useUserStore from '@/store/modules/user';
-import options from './particlesOptions';
 import type { userInfo } from '@/apis/user/type';
+import useUserStore from '@/store/modules/user';
 import { getTime } from '@/utils/time';
+import {
+  Eleme,
+  Lock,
+  User,
+  Phone,
+  Cherry,
+} from '@element-plus/icons-vue';
+import { ElNotification } from 'element-plus';
+import { useRouter } from 'vue-router';
+import options from './particlesOptions';
 
 const router = useRouter();
 const useStore = useUserStore();
 
-/** 表单数据字段 */
+/** 登录时所需表单数据字段 */
 const FormData = reactive({
   /** 用户名 */
   userName: '',
@@ -23,15 +28,66 @@ const FormData = reactive({
   password: '',
 });
 
-/** 表单控制实例 */
+/** 注册时所需表单数据字段 */
+const FormDataRegistry = reactive({
+  /** 用户名 */
+  userName: '',
+  /** 用户全名 */
+  userFullName: '',
+  /** 密码 */
+  password: '',
+  /** 确认密码 */
+  confirmPassword: '',
+  /** 用户手机号码 */
+  tel: '',
+  /** 用户角色 */
+  userRole: '',
+});
+
+// * 监控注册用户的填写状态，若填写完毕，为新注册用户默认指定为普通用户角色且不可修改
+watch(
+  () => FormDataRegistry,
+  (value) => {
+    if (value.userName !== '' && value.userFullName !== '') {
+      value.userRole = '普通用户';
+    } else {
+      value.userRole = '';
+    }
+  },
+  { immediate: true, deep: true },
+);
+
+/** 登录表单控制实例 */
 // @ts-ignore
 const ruleFormRef = ref<FormInstance>();
+
+/** 注册表单控制实例 */
+// @ts-ignore
+const ruleFormRegistryRef = ref<FormInstance>();
 
 /** 用户名校验 */
 const validateUserName = (_rule: any, value: any, callback: any) => {
   if (value === '') {
-    callback(new Error('Please input the username'));
+    callback(new Error('Please input username'));
   } else if (FormData.userName !== '') {
+    callback();
+  }
+};
+
+/** 注册的用户名校验 */
+const validateUserName2 = (_rule: any, value: any, callback: any) => {
+  if (value === '') {
+    callback(new Error('Please input username'));
+  } else if (FormDataRegistry.userName !== '') {
+    callback();
+  }
+};
+
+/** 用户全名校验 */
+const validateUserFullName = (_rule: any, value: any, callback: any) => {
+  if (value === '') {
+    callback(new Error('Please input userFullname'));
+  } else if (FormDataRegistry.userFullName !== '') {
     callback();
   }
 };
@@ -39,17 +95,60 @@ const validateUserName = (_rule: any, value: any, callback: any) => {
 /** 密码校验 */
 const validatePassWord = (_rule: any, value: any, callback: any) => {
   if (value === '') {
-    callback(new Error('Please input the password'));
+    callback(new Error('Please input password'));
   } else if (FormData.password !== '') {
     callback();
   }
 };
 
-/** 表单规则校验 */
+/** 注册的密码校验 */
+const validatePassWord2 = (_rule: any, value: any, callback: any) => {
+  if (value === '') {
+    callback(new Error('Please input password'));
+  } else if (FormDataRegistry.password !== '') {
+    callback();
+  }
+};
+
+/** 注册的二次密码校验 */
+const validateconfirmPassword = (_rule: any, value: any, callback: any) => {
+  if (value === '') {
+    callback(new Error('Please input confirmPassword'));
+  } else if (FormDataRegistry.password !== FormDataRegistry.confirmPassword) {
+    callback(new Error('The two passwords do not match'));
+  } else if (FormDataRegistry.confirmPassword !== '') {
+    callback();
+  }
+};
+
+/** 注册的手机号码校验 */
+const validateTel = (_rule: any, value: any, callback: any) => {
+  let reg =
+    /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
+  if (value === '') {
+    callback(new Error('Please input your telPhone'));
+  } else if (!reg.test(value)) {
+    callback(new Error('Incorrect format, please try other telPhone'));
+  } else if (value !== '') {
+    callback();
+  }
+};
+
+/** 登录表单规则校验 */
 // @ts-ignore
 const rules = reactive<FormRules<typeof FormData>>({
-  name: [{ validator: validateUserName, trigger: 'blur' }],
+  userName: [{ validator: validateUserName, trigger: 'blur' }],
   password: [{ validator: validatePassWord, trigger: 'blur' }],
+});
+
+/** 注册表单验证规则 */
+// @ts-ignore
+const rulesRegistry = reactive<FormRules<typeof FormDataRegistry>>({
+  userName: [{ validator: validateUserName2, trigger: 'blur' }],
+  userFullName: [{ validator: validateUserFullName, trigger: 'blur' }],
+  password: [{ validator: validatePassWord2, trigger: 'blur' }],
+  confirmPassword: [{ validator: validateconfirmPassword, trigger: 'blur' }],
+  tel: [{ validator: validateTel, trigger: 'blur' }],
 });
 
 /** 登录发起函数 */
@@ -90,6 +189,43 @@ const resetForm = (formEl: FormInstance | undefined) => {
   formEl.resetFields();
 };
 
+/** 注册表单的重置 */
+// @ts-ignore
+const resetFormRegistry = (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  formEl.resetFields();
+};
+
+/** 注册发起函数 */
+const submitFormRegistry = (formEl: any) => {
+  if (!formEl) return;
+  formEl.validate(async (valid: any) => {
+    if (valid) {
+      try {
+        const userData: userInfo | any = await useStore.userRegistryAction({
+          ...FormDataRegistry,
+          userRole: 2,
+        });
+
+        ElNotification({
+          message: `新用户 ${userData.userName} 注册成功`,
+          duration: 3 * 1000,
+          type: 'success',
+        });
+        formEl.resetFields();
+      } catch (error) {
+        ElNotification({
+          message: error,
+          duration: 3 * 1000,
+          type: 'error',
+        });
+      }
+    } else {
+      return false;
+    }
+  });
+};
+
 // 处理登录注册的动画切换
 onMounted(() => {
   const { pageInstanceAllRefs } = useCurrentInstance();
@@ -121,34 +257,101 @@ const particlesLoaded = async (container: any) => {
     >
       <!-- 注册 -->
       <div class="container__form container--signup">
-        <form
-          action="#"
+        <el-form
+          ref="ruleFormRegistryRef"
+          :model="FormDataRegistry"
           class="form"
-          ref="form1"
+          status-icon
+          :rules="rulesRegistry"
         >
-          <h2 class="form__title">Register</h2>
-          <input
-            type="text"
-            placeholder="User"
-            class="input"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            class="input"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            class="input"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            class="input"
-          />
-          <button :disabled="true" class="btn">Register</button>
-        </form>
+          <h2 class="form__title">Registry</h2>
+          <el-form-item prop="userName">
+            <el-input
+              v-model="FormDataRegistry.userName"
+              placeholder="Please input username"
+              autocomplete="on"
+            >
+              <template #prefix>
+                <el-icon class="el-input__icon"><User /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="userFullName">
+            <el-input
+              v-model="FormDataRegistry.userFullName"
+              placeholder="Please input userFullName"
+            >
+              <template #prefix>
+                <el-icon class="el-input__icon"><User /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model="FormDataRegistry.password"
+              type="password"
+              placeholder="Please input password"
+              show-password
+              autocomplete="on"
+            >
+              <template #prefix>
+                <el-icon class="el-input__icon"><Lock /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="confirmPassword">
+            <el-input
+              v-model="FormDataRegistry.confirmPassword"
+              type="password"
+              placeholder="Please input confirmPassword"
+              show-password
+              autocomplete="on"
+            >
+              <template #prefix>
+                <el-icon class="el-input__icon"><Lock /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="tel">
+            <el-input
+              v-model="FormDataRegistry.tel"
+              placeholder="Please input telPhone"
+            >
+              <template #prefix>
+                <el-icon class="el-input__icon"><Phone /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="userRole">
+            <el-input
+              v-model="FormDataRegistry.userRole"
+              :disabled="true"
+            >
+              <template #prefix>
+                <el-icon class="el-input__icon"><Cherry /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <div
+              class="btn-group"
+              style="margin-bottom: -50px"
+            >
+              <el-button
+                :loading-icon="Eleme"
+                :loading="useStore.registryBtnLoading"
+                type="primary"
+                @click="submitFormRegistry(ruleFormRegistryRef)"
+              >
+                Submit
+              </el-button>
+              <el-button @click="resetFormRegistry(ruleFormRegistryRef)">
+                Reset
+              </el-button>
+            </div>
+          </el-form-item>
+        </el-form>
       </div>
 
       <!-- 登录 -->
@@ -161,7 +364,7 @@ const particlesLoaded = async (container: any) => {
           :rules="rules"
         >
           <h2 class="form__title">Login In</h2>
-          <el-form-item prop="username">
+          <el-form-item prop="userName">
             <el-input
               v-model="FormData.userName"
               placeholder="Please input username(default:root)"
@@ -223,6 +426,7 @@ const particlesLoaded = async (container: any) => {
         </div>
       </div>
     </div>
+
     <vue-particles
       class="tsparticles"
       id="tsparticles"
@@ -270,6 +474,7 @@ const particlesLoaded = async (container: any) => {
 
 .container__form {
   height: 100%;
+  overflow: auto;
   position: absolute;
   top: 0;
   transition: all 0.6s ease-in-out;

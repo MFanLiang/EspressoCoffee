@@ -9,7 +9,7 @@ enum API {
 }
 
 /** 注册新用户 */
-const addNewUser = (data: userInfo) => {
+const addNewUser = (data: Partial<userInfo>) => {
   return service<any, loginResponseData>({
     url: '/user/register',
     method: 'POST',

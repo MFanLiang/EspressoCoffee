@@ -5,6 +5,19 @@ export interface loginFormType {
   password: string;
 }
 
+export interface registryInfoType {
+  /** 用户名 */
+  userName: string;
+  /** 用户全名 */
+  userFullName: string;
+  /** 密码 */
+  password: string;
+  /** 用户手机号码 */
+  tel: string;
+  /** 用户角色 */
+  userRole: number;
+}
+
 export interface userInfo {
   /** id */
   id: string;

@@ -12,6 +12,9 @@ export interface UserState {
   /** 登录页面的登录按钮加载态 */
   loginBtnLoading: boolean;
 
+  /** 登录页面的注册按钮加载态 */
+  registryBtnLoading: boolean;
+
   /** 个人信息的抽屉打开和收起 */
   userInfoDrawerVisible: boolean;
 
