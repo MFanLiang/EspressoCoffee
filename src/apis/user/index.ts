@@ -4,14 +4,14 @@ import type { loginFormType, loginResponseData, allUserInfoType, userInfo } from
 
 // 定义管理接口
 enum API {
-  LOGIN_URL = '/user/login',
-  USERINFO_URL = '/user/pointer-info',
+  LOGIN_URL = '/coffee/user/login',
+  USERINFO_URL = '/coffee/user/pointer-info',
 }
 
 /** 注册新用户 */
-const addNewUser = (data: userInfo) => {
+const addNewUser = (data: Partial<userInfo>) => {
   return service<any, loginResponseData>({
-    url: '/user/register',
+    url: '/coffee/user/register',
     method: 'POST',
     data
   });
@@ -37,11 +37,20 @@ const reqUserInfo = (params: string) => {
   });
 };
 
+/** 模糊搜索指定用户 */
+const fuzzyquery = (data: any) => {
+  return service<any, allUserInfoType>({
+    url: '/coffee/user/fuzzyquery',
+    method: 'POST',
+    data,
+  })
+};
+
 /** 获取所有用户信息 */
 const getAllUserInformation = () => {
   return service<any, allUserInfoType>({
     method: 'POST',
-    url: '/user/user-all-info',
+    url: '/coffee/user/user-all-info',
   })
 };
 
@@ -53,7 +62,7 @@ const delPointerUser = (id: string) => {
     message: string;
   }>({
     method: 'DELETE',
-    url: '/user',
+    url: '/coffee/user',
     data: {
       id
     }
@@ -68,10 +77,10 @@ const editPointerUser = (data: userInfo) => {
     message: string;
   }>({
     method: 'PUT',
-    url: '/user',
+    url: '/coffee/user',
     data,
   });
-}
+};
 
 export {
   addNewUser,
@@ -79,5 +88,6 @@ export {
   reqUserInfo,
   getAllUserInformation,
   editPointerUser,
-  delPointerUser
+  delPointerUser,
+  fuzzyquery
 };

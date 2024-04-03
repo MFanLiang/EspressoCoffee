@@ -15,6 +15,7 @@ const getViteEnv = (mode, target) => {
 // https://vitejs.dev/config/
 const baseConfig = (mode) => {
   return {
+    base: "./", // 设置 / 默认文件的根目录为相对路径
     plugins: [
       vue(),
       // 自动按需引入elmentPlus

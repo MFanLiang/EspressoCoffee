@@ -1,4 +1,3 @@
-
 import { defineConfig } from 'vite';
 import baseConfig from './vite.config.base';
 
@@ -18,7 +17,7 @@ export default defineConfig(({ command, mode }) => {
         },
         proxy: {
           '/api': {
-            target: 'http://192.168.10.128:5050',
+            target: 'http://localhost:5050',
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/api/, ''),
           }

@@ -1,10 +1,10 @@
 /** 用户相关的数据仓库 */
 
 import { defineStore } from 'pinia';
-import { reqLogin } from '@/apis/user/index';
+import { reqLogin, addNewUser } from '@/apis/user/index';
 import constantRoute from '@/router/routes';
 import useLocalStorage from '@/hooks/useLocalStorage.ts';
-import type { loginFormType } from '@/apis/user/type';
+import type { loginFormType, registryInfoType } from '@/apis/user/type';
 import type { UserState } from './types/type';
 
 const { setLocalStorage, getLocalStorage } = useLocalStorage();
@@ -16,6 +16,7 @@ const useUserStore = defineStore("user", {
       token: getLocalStorage('espresso_token'),
       menuRoutes: constantRoute,
       loginBtnLoading: false,
+      registryBtnLoading: false,
       userInfoDrawerVisible: false,
       currentUserInfo: getLocalStorage('user_info') && JSON.parse(getLocalStorage('user_info')),
     }
@@ -23,12 +24,12 @@ const useUserStore = defineStore("user", {
 
   // 异步方法
   actions: {
-    /** 用户登录的方法 */
+    /** 用户登录的方法实例 */
     async userLogin(data: loginFormType) {
       this.loginBtnLoading = true;
-      const { userName, password } = data;
+      const { username, password } = data;
       return await new Promise((resolve, reject) => {
-        reqLogin({ userName, password }).then((response) => {
+        reqLogin({ username, password }).then((response) => {
           if (response.code === 200) {
             this.currentUserInfo = response.data;
             this.token = response.token || '';
@@ -44,6 +45,22 @@ const useUserStore = defineStore("user", {
         })
       });
     },
+
+    /** 用户注册的方法实例 */
+    async userRegistryAction(data: registryInfoType) {
+      this.registryBtnLoading = true;
+      return await new Promise((resolve, reject) => {
+        addNewUser({ ...data }).then((response) => {
+          if (response.code === 200) {
+            this.registryBtnLoading = false;
+            return resolve(response.data);
+          } else {
+            this.registryBtnLoading = false;
+            return reject(response.message);
+          }
+        })
+      })
+    }
   },
 
   getters: {}

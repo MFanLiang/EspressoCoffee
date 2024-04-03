@@ -14,8 +14,6 @@ const router = useRouter();
 const userStore = useUseStorage();
 const LayOutSettingStore = useLayOutSettingStore();
 
-LayOutSettingStore.fold;
-
 // 获取当前所在的路由地址 path，计算属性
 const currentRouterPath = computed(() => router.currentRoute.value.path);
 </script>

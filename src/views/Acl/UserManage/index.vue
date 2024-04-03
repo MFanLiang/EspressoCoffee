@@ -13,10 +13,11 @@ import { ElMessage } from 'element-plus';
 import type { PropsType } from '@/components/BaseDialog/type';
 import {
   getAllUserInformation,
-  reqUserInfo,
+  fuzzyquery,
   delPointerUser,
+  editPointerUser,
 } from '@/apis/user/index';
-import { userInfo } from '@/apis/user/type';
+import type { userInfo } from '@/apis/user/type';
 import type { paginationType } from './type.ts';
 
 const params = ref<Partial<PropsType>>({});
@@ -25,7 +26,8 @@ const params = ref<Partial<PropsType>>({});
 const userInfoPopoerVisible = ref<boolean>(false);
 
 /** 表格数据源 */
-const tableData = ref<userInfo[] | []>([]);
+const tableData = ref<userInfo[] | []>();
+const loading = ref<boolean>(true);
 
 /** 用户新增/编辑 对话框实例 */
 const uesrInfoPoper = ref();
@@ -41,24 +43,83 @@ const indexMethod = (index: number) => {
 };
 
 /** 高级搜索表单 */
-const searchFormData = ref<{ userName: string }>({
-  userName: '',
+const searchFormData = ref<{ username: string }>({
+  username: '',
 });
 
 const searchSingleUser = async () => {
-  const rs = await reqUserInfo(searchFormData.value.userName);
+  // 调用模糊搜索接口
+  const rs = await fuzzyquery({ search: searchFormData.value.username });
   if (rs.code === 200) {
-    tableData.value = rs.data;
+    tableData.value = rs.data as any;
   }
 };
 
 const handleReset = async () => {
-  searchFormData.value = { userName: '' };
+  searchFormData.value = { username: '' };
   await initDataSource();
 };
 
 const handleClose = (dark: boolean) => {
   userInfoPopoerVisible.value = dark;
+};
+
+const svg = `
+        <path class="path" d="
+          M 30 15
+          L 28 17
+          M 25.61 25.61
+          A 15 15, 0, 0, 1, 15 30
+          A 15 15, 0, 1, 1, 27.99 7.5
+          L 15 15
+        " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
+      `;
+
+/** 用户权限tag颜色 */
+const userRoleTypeTag = (val: number) => {
+  switch (val) {
+    case 1:
+      return '';
+    case 2:
+      return 'success';
+    case 3:
+      return 'success';
+    case 4:
+      return 'danger';
+    case 5:
+      return 'warning';
+    default:
+      return '';
+  }
+};
+
+/** 用户角色下拉枚举值 */
+const options: any = {
+  1: {
+    value: 1,
+    label: '超级管理员',
+    disabled: false,
+  },
+  2: {
+    value: 2,
+    label: '普通用户',
+    disabled: false,
+  },
+  3: {
+    value: 3,
+    label: '运营用户',
+    disabled: false,
+  },
+  4: {
+    value: 4,
+    label: '访客用户',
+    disabled: false,
+  },
+  5: {
+    value: 5,
+    label: '临时用户',
+    disabled: false,
+  },
 };
 
 /** 添加新用户 */
@@ -69,41 +130,60 @@ const addNewUser = () => {
   userInfoPopoerVisible.value = true;
   params.value = {
     title: '新增用户',
-    width: '45%',
+    width: '60%',
     successBtnText: '确认',
     closeBtnText: '取消',
     isDraggable: true,
     fullscreen: false,
-    useType: 'add'
+    useType: 'add',
   };
 };
 
 /** 编辑指定用户项 */
-const handleEditUser = (index, row) => {
+const handleEditUser = (_index: number, row: userInfo) => {
   if (uesrInfoPoper.value) {
     uesrInfoPoper.value?.echoFormData('edit', row);
   }
   userInfoPopoerVisible.value = true;
   params.value = {
     title: '编辑用户',
-    width: '45%',
+    width: '60%',
     successBtnText: '确认',
     closeBtnText: '取消',
     isDraggable: true,
     fullscreen: false,
-    useType: 'edit'
+    useType: 'edit',
   };
 };
 
-const handleDeleteUser = async (index, row) => {
+const handleDeleteUser = async (_index: number, row: userInfo) => {
   const res = await delPointerUser(row.id);
   if (res.code === 200) {
     initDataSource();
     ElMessage({
-      message: `用户【 ${row.userName} 】删除成功`,
+      message: `用户【 ${row.username} 】删除成功`,
       type: 'success',
     });
   }
+};
+
+const switchStatus = async (_val: boolean, row: userInfo) => {
+  await editPointerUser(row)
+    .then((res) => {
+      if (res.code === 200) {
+        ElMessage({
+          message: `用户【 ${row.username} 】已${_val ? '启用' : '禁用'}`,
+          type: 'success',
+        });
+      }
+    })
+    .catch((err: Error) => {
+      console.log('err :>> ', err);
+      ElMessage({
+        message: `${err || '网络异常，请稍后再试'}`,
+        type: 'error',
+      });
+    });
 };
 
 const handleSelectionChange = (val: userInfo[]) => {
@@ -117,6 +197,7 @@ const handleSizeChange = () => {};
 const handleCurrentChange = () => {};
 
 const initDataSource = async () => {
+  loading.value = true;
   try {
     const res = await getAllUserInformation();
     tableData.value = res.data;
@@ -125,9 +206,15 @@ const initDataSource = async () => {
       pageSize: res.pageSize,
       total: res.total,
     };
+    loading.value = false;
   } catch (err) {
     if (err) {
       console.log('err :>> ', err);
+      ElMessage({
+        message: `网络异常，请稍后再试`,
+        type: 'error',
+      });
+      loading.value = false;
     }
   }
 };
@@ -146,7 +233,7 @@ onMounted(() => {
       >
         <el-form-item label="用户名">
           <el-input
-            v-model="searchFormData.userName"
+            v-model="searchFormData.username"
             placeholder="请输入用户名"
             clearable
           />
@@ -172,7 +259,7 @@ onMounted(() => {
 
     <el-card
       style="margin-top: 10px"
-      :body-style="{ padding: '12px' }"
+      :body-style="{ padding: '12px', height: 'calc(100vh - 225px)' }"
     >
       <div class="btn_action">
         <el-button
@@ -190,11 +277,24 @@ onMounted(() => {
           BatchDel
         </el-button>
       </div>
-      <div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: end;
+          flex-direction: column;
+          height: 93%;
+          gap: 15px;
+        "
+      >
         <el-table
           :data="tableData"
+          v-loading="loading"
+          element-loading-text="Loading..."
+          :element-loading-spinner="svg"
+          element-loading-svg-view-box="-10, -10, 50, 50"
+          element-loading-background="rgba(122, 122, 122, 0.5)"
           stripe
-          :height="540"
           @selection-change="handleSelectionChange"
         >
           <el-table-column
@@ -210,7 +310,7 @@ onMounted(() => {
             :index="indexMethod"
           ></el-table-column>
           <el-table-column
-            prop="userName"
+            prop="username"
             label="用户姓名"
             align="center"
             width="140"
@@ -226,7 +326,38 @@ onMounted(() => {
             label="用户角色"
             align="center"
             width="200"
-          />
+          >
+            <template #default="scope">
+              <el-tag
+                effect="dark"
+                :type="userRoleTypeTag(scope.row.userRole)"
+                disable-transitions
+              >
+                {{ options[scope.row.userRole]?.label }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="status"
+            label="用户状态"
+            align="center"
+            width="180"
+          >
+            <template #default="scope">
+              <el-switch
+                v-model="scope.row.status"
+                :disabled="scope.row.userRole === 1"
+                active-text="启用"
+                inactive-text="禁用"
+                inline-prompt
+                style="
+                  --el-switch-on-color: #13ce66;
+                  --el-switch-off-color: #ff4949;
+                "
+                @change="(status: boolean) => switchStatus(status, scope.row)"
+              />
+            </template>
+          </el-table-column>
           <el-table-column
             prop="avatar"
             label="用户头像"
@@ -331,7 +462,6 @@ onMounted(() => {
         />
       </div>
     </el-card>
-
     <UserInfoPoper
       ref="uesrInfoPoper"
       :userInfoPopoerVisible="userInfoPopoerVisible"

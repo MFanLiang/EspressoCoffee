@@ -7,3 +7,10 @@ export interface paginationType {
   /** 每页的数量 */
   pageSize?: number,
 }
+
+/** 用户角色下拉枚举类型 */
+export interface userSelectType {
+  value: number;
+  label: string;
+  disabled?: boolean;
+}

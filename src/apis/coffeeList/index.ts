@@ -20,6 +20,7 @@ const addInvoice = (params: coffeeType) => {
   return service({
     method: methodType.POST,
     url: API.INVOICEADD_URL,
+    data: params
   })
 };
 

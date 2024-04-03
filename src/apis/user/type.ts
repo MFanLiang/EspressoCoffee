@@ -1,15 +1,28 @@
 export interface loginFormType {
   /** 用户名 */
-  userName: string;
+  username: string;
   /** 密码 */
   password: string;
+}
+
+export interface registryInfoType {
+  /** 用户名 */
+  username: string;
+  /** 用户全名 */
+  userFullName: string;
+  /** 密码 */
+  password: string;
+  /** 用户手机号码 */
+  tel: string;
+  /** 用户角色 */
+  userRole: number;
 }
 
 export interface userInfo {
   /** id */
   id: string;
   /** 用户名 */
-  userName: string;
+  username: string;
   /** 用户全称 */
   userFullName: string;
   /** 用户角色 */
@@ -20,6 +33,8 @@ export interface userInfo {
   tel: string;
   /** 密码 */
   password?: string;
+  /** 用户状态 (1 可用状态，0 注销不可用状态) */
+  status: number;
   /** 创建时间 */
   createDate: string;
   /** 更新时间 */

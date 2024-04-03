@@ -29,6 +29,10 @@ export interface responseDataType {
   msg: string;
   /** 返回的数据量大小 */
   total?: number;
+  /** 当前页 */
+  currentPage?: number,
+  /** 每页的数量 */
+  pageSize?: number,
   /** token */
   token?: string;
 }

@@ -15,7 +15,7 @@ export default {
 
     // 自动遍历所有图标组件并注册为全局组件
     for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-      app_root.component(key, component)
+      app_root.component(key, component as any)
     }
   }
 }

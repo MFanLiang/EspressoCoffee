@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'Promotion', // 定义菜单文字左侧的图标，支持element-plus所有图标
     },
     // 路由独享的守卫，只在进入到 /login 路由时触发
-    beforeEnter(to, from, next) {
+    beforeEnter(_to, from, next) {
       // 获取 token
       const jwt = getLocalStorage('espresso_token');
       // 如果已存在token，则默认跳转到 /home 路由

@@ -18,7 +18,7 @@
     "@types/pubsub-js": "1.8.3",
     "axios": "^1.6.1",
     "dayjs": "^1.11.10",
-    "element-plus": "2.4.3",
+    "element-plus": "^2.6.1",
     "mitt": "3.0.0",
     "nprogress": "^0.2.0",
     "particles.vue3": "^2.12.0",

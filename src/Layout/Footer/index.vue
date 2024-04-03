@@ -5,7 +5,7 @@ import useLayOutSettingStore from '@/store/modules/layout';
 
 const LayOutSettingStore = useLayOutSettingStore();
 
-const changeFooterBoxStyle = (flag) => {
+const changeFooterBoxStyle = (flag: any) => {
   const footerDom = document.getElementById('footer_box');
   if (!footerDom) return null;
   if (flag) {
