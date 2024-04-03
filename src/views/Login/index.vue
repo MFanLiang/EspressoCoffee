@@ -6,13 +6,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import type { userInfo } from '@/apis/user/type';
 import useUserStore from '@/store/modules/user';
 import { getTime } from '@/utils/time';
-import {
-  Eleme,
-  Lock,
-  User,
-  Phone,
-  Cherry,
-} from '@element-plus/icons-vue';
+import { Eleme, Lock, User, Phone, Cherry } from '@element-plus/icons-vue';
 import { ElNotification } from 'element-plus';
 import { useRouter } from 'vue-router';
 import options from './particlesOptions';
@@ -23,7 +17,7 @@ const useStore = useUserStore();
 /** 登录时所需表单数据字段 */
 const FormData = reactive({
   /** 用户名 */
-  userName: '',
+  username: '',
   /** 密码 */
   password: '',
 });
@@ -31,7 +25,7 @@ const FormData = reactive({
 /** 注册时所需表单数据字段 */
 const FormDataRegistry = reactive({
   /** 用户名 */
-  userName: '',
+  username: '',
   /** 用户全名 */
   userFullName: '',
   /** 密码 */
@@ -48,7 +42,7 @@ const FormDataRegistry = reactive({
 watch(
   () => FormDataRegistry,
   (value) => {
-    if (value.userName !== '' && value.userFullName !== '') {
+    if (value.username !== '' && value.userFullName !== '') {
       value.userRole = '普通用户';
     } else {
       value.userRole = '';
@@ -69,7 +63,7 @@ const ruleFormRegistryRef = ref<FormInstance>();
 const validateUserName = (_rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('Please input username'));
-  } else if (FormData.userName !== '') {
+  } else if (FormData.username !== '') {
     callback();
   }
 };
@@ -78,7 +72,7 @@ const validateUserName = (_rule: any, value: any, callback: any) => {
 const validateUserName2 = (_rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('Please input username'));
-  } else if (FormDataRegistry.userName !== '') {
+  } else if (FormDataRegistry.username !== '') {
     callback();
   }
 };
@@ -164,7 +158,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
           params: { ...userData },
         });
         ElNotification({
-          message: `${userData.userName} 登录成功`,
+          message: `${userData.username} 登录成功`,
           title: `Hi, ${getTime()}好!`,
           duration: 3 * 1000,
           type: 'success',
@@ -208,7 +202,7 @@ const submitFormRegistry = (formEl: any) => {
         });
 
         ElNotification({
-          message: `新用户 ${userData.userName} 注册成功`,
+          message: `新用户 ${userData.username} 注册成功`,
           duration: 3 * 1000,
           type: 'success',
         });
@@ -267,7 +261,7 @@ const particlesLoaded = async (container: any) => {
           <h2 class="form__title">Registry</h2>
           <el-form-item prop="userName">
             <el-input
-              v-model="FormDataRegistry.userName"
+              v-model="FormDataRegistry.username"
               placeholder="Please input username"
               autocomplete="on"
             >
@@ -366,7 +360,7 @@ const particlesLoaded = async (container: any) => {
           <h2 class="form__title">Login In</h2>
           <el-form-item prop="userName">
             <el-input
-              v-model="FormData.userName"
+              v-model="FormData.username"
               placeholder="Please input username(default:root)"
               autocomplete="on"
             >

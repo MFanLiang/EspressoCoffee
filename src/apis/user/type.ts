@@ -1,13 +1,13 @@
 export interface loginFormType {
   /** 用户名 */
-  userName: string;
+  username: string;
   /** 密码 */
   password: string;
 }
 
 export interface registryInfoType {
   /** 用户名 */
-  userName: string;
+  username: string;
   /** 用户全名 */
   userFullName: string;
   /** 密码 */
@@ -22,7 +22,7 @@ export interface userInfo {
   /** id */
   id: string;
   /** 用户名 */
-  userName: string;
+  username: string;
   /** 用户全称 */
   userFullName: string;
   /** 用户角色 */

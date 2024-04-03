@@ -46,7 +46,7 @@ const dialogEnterParams = computed({
 });
 
 const FormDataSource = {
-  userName: '',
+  username: '',
   password: '',
   userFullName: '',
   userRole: '',
@@ -90,7 +90,7 @@ const options = ref<userSelectType[]>([
 
 /** 表单的校验规则 */
 const rules = reactive({
-  userName: [
+  username: [
     {
       required: true,
       message: '请输入用户名',
@@ -132,7 +132,7 @@ const handleConfirmBtn = () => {
           if (res.code === 200) {
             emits('initDataSource');
             ElMessage({
-              message: `新用户 ${formData.value.userName} 创建成功`,
+              message: `新用户 ${formData.value.username} 创建成功`,
               type: 'success',
             });
             handleBeforeClose();
@@ -143,7 +143,7 @@ const handleConfirmBtn = () => {
           if (res1.code === 200) {
             emits('initDataSource');
             ElMessage({
-              message: `用户 ${formData.value.userName} 修改成功`,
+              message: `用户 ${formData.value.username} 修改成功`,
               type: 'success',
             });
             handleBeforeClose();
@@ -200,12 +200,12 @@ defineExpose({
         <el-row :gutter="24">
           <el-col :span="12">
             <el-form-item
-              prop="userName"
+              prop="username"
               label="姓名"
             >
               <el-input
-                v-model="formData.userName"
-                placeholder="Please input userName"
+                v-model="formData.username"
+                placeholder="Please input username"
                 autocomplete="off"
                 clearable
               />

@@ -43,20 +43,20 @@ const indexMethod = (index: number) => {
 };
 
 /** 高级搜索表单 */
-const searchFormData = ref<{ userName: string }>({
-  userName: '',
+const searchFormData = ref<{ username: string }>({
+  username: '',
 });
 
 const searchSingleUser = async () => {
   // 调用模糊搜索接口
-  const rs = await fuzzyquery({ search: searchFormData.value.userName });
+  const rs = await fuzzyquery({ search: searchFormData.value.username });
   if (rs.code === 200) {
     tableData.value = rs.data as any;
   }
 };
 
 const handleReset = async () => {
-  searchFormData.value = { userName: '' };
+  searchFormData.value = { username: '' };
   await initDataSource();
 };
 
@@ -161,7 +161,7 @@ const handleDeleteUser = async (_index: number, row: userInfo) => {
   if (res.code === 200) {
     initDataSource();
     ElMessage({
-      message: `用户【 ${row.userName} 】删除成功`,
+      message: `用户【 ${row.username} 】删除成功`,
       type: 'success',
     });
   }
@@ -172,7 +172,7 @@ const switchStatus = async (_val: boolean, row: userInfo) => {
     .then((res) => {
       if (res.code === 200) {
         ElMessage({
-          message: `用户【 ${row.userName} 】已${_val ? '启用' : '禁用'}`,
+          message: `用户【 ${row.username} 】已${_val ? '启用' : '禁用'}`,
           type: 'success',
         });
       }
@@ -233,7 +233,7 @@ onMounted(() => {
       >
         <el-form-item label="用户名">
           <el-input
-            v-model="searchFormData.userName"
+            v-model="searchFormData.username"
             placeholder="请输入用户名"
             clearable
           />
@@ -310,7 +310,7 @@ onMounted(() => {
             :index="indexMethod"
           ></el-table-column>
           <el-table-column
-            prop="userName"
+            prop="username"
             label="用户姓名"
             align="center"
             width="140"

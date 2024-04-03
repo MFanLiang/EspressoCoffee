@@ -27,9 +27,9 @@ const useUserStore = defineStore("user", {
     /** 用户登录的方法实例 */
     async userLogin(data: loginFormType) {
       this.loginBtnLoading = true;
-      const { userName, password } = data;
+      const { username, password } = data;
       return await new Promise((resolve, reject) => {
-        reqLogin({ userName, password }).then((response) => {
+        reqLogin({ username, password }).then((response) => {
           if (response.code === 200) {
             this.currentUserInfo = response.data;
             this.token = response.token || '';
