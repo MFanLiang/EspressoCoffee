@@ -4,7 +4,7 @@ import type { coffeeType } from './type';
 
 // 定义管理接口
 enum API {
-  INVOICELIST_URL = '/coffee/list',
+  INVOICELIST_URL = '/coffee/coffeelist',
   INVOICEADD_URL = '/coffee/add',
 }
 
